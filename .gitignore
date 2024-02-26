@@ -1,0 +1,37 @@
+# Ignora archivos y directorios generados por el sistema operativo
+.DS_Store
+Thumbs.db
+
+# Ignora archivos de configuración locales
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignora el directorio de entorno virtual (venv o virtualenv)
+venv/
+env/
+
+# Ignora archivos de configuración específicos de Python
+*.pyc
+*.pyo
+*.pyd
+
+# Ignora el archivo de configuración de la base de datos
+*.sqlite3
+
+# Ignora el archivo de configuración local
+*.local
+
+# Ignora archivos de logs
+*.log
+
+# Ignora archivos generados al ejecutar tests
+.coverage
+htmlcov/
+
+# Ignora archivos de configuración de IDEs
+.idea/
+.vscode/
+
+# Ignora archivos de migraciones de la base de datos
+/migrations/

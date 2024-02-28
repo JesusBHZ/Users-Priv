@@ -286,7 +286,7 @@ def consultasUsersAndPrivilegios(request):
 
         user = Usuarios.objects.get(pk=int(usuario))
 
-        if user.password != password:
+        if user.password == password:
             query_array = query.split()
             
             if query_array[0].upper() == 'SELECT':
@@ -298,15 +298,31 @@ def consultasUsersAndPrivilegios(request):
             elif query_array[0].upper() == 'DELETE':
                 result = DELETE(query_array, user)
             else:
-                return HttpResponse({"status": 400, "result": []}, status=400)
+                return HttpResponse({"status": 400, "result": [{
+
+                    "estatus":"Sintax Error"
+                }]}, status=400)
         else:
-            return HttpResponse({"status": 406, "result": []}, status=406)  
-        print(f"Hola funcione {result}")
+            return HttpResponse({"status": 406, "result": [{
+
+                "estatus":"Usuario y contraseña incorrecta"
+            }]}, status=406)  
+        
+        if result == 400:
+            result =  {"status": "No tienes permisos"} 
+
         return JsonResponse({"status": 202, "result": result}, status=202)
     except Usuarios.DoesNotExist:
-        return HttpResponse({"status": 404, "result": []}, status=404)
+        return HttpResponse({"status": 404, "result": [{
+
+            "estatus":"Ocurrio un error"
+        }]}, status=404)
     except Exception as e:
-        return HttpResponse({"status": 400, "result": []}, status=400)
+        print(e)
+        return HttpResponse(
+            {"status": 400, "result": [{"estatus": "No tienes permisos", "error": str(e)}]},
+            status=400
+        )
 
 def SELECT(query, user):
     result = []  
@@ -341,12 +357,11 @@ def SELECT(query, user):
 
 
 def UPDATE(query, user):
-    result = [
-        {
-            "Estado": "Cambio exitoso",
+    result = {
+            "status": "Cambio exitoso",
         }
         
-    ]
+    
     newTabla = query[1].title()
     objectTable = Tablas.objects.get(name_tabla=newTabla)
     objectPrivilegio = Privilegios.objects.get(name_privilegio="UPDATE")
@@ -388,11 +403,10 @@ def UPDATE(query, user):
 
 def DELETE(query, user):
     try:
-        result = [
-            {
-                "Estado": "Eliminacion exitosa",
+        result = {
+                "status": "Eliminacion exitosa",
             }
-        ]
+        
         print("DELETE")
         # DELETE FROM productos WHERE id_producto=1;
         
@@ -429,11 +443,8 @@ def DELETE(query, user):
 def INSERT(query, user, consulta):
     # INSERT INTO productos (producto,descripcion,precio) VALUES(’producto 1’,’Producto de prueba’,100.00);
     try:
-        result = [
-            {
-                "Estado": "Registro exitoso",
-            }
-        ]
+        result = {
+                "status": "Registro exitoso"}        
         print("INSERT")
 
         newTabla = query[2].title()

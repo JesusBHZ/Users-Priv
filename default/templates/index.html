@@ -160,35 +160,40 @@
         
             fetch('consultasUsersAndPrivilegios', {
                 method: 'POST',
-                body: formData,  // No necesitas convertir a JSON ya que estás usando FormData
+                body: formData,
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 var resultados = data.result;
-                
-                textarea.textContent = JSON.stringify(resultados, null, 2);
-
-
+                if (Array.isArray(data.result)) {
+                    // Si es un array, mostramos cada objeto en una nueva línea
+                    textarea.textContent = data.result.map(obj => JSON.stringify(obj, null, 2)).join('\n');
+                } else{
+                    // Si es un objeto individual con la propiedad 'status', lo mostramos
+                    textarea.textContent = JSON.stringify(data.result, null, 2);
+                }
+        
                 console.log(data.status);
-                if(data.status == 202) {
+                if (data.status == 202) {
                     // textarea.innerHTML = "OK :)";
-                    
-                } else if(data.status == 400) {
+                } else if (data.status == 400) {
                     textarea.innerHTML = "You do not have permission";
-                } else if(data.status == 406) {
+                } else if (data.status == 406) {
                     textarea.innerHTML = "Password Incorrect";
                 } else {
                     textarea.innerHTML = "You have a syntax error";
                 }
             })
             .catch(error => {
-                if(data.status == 400) {
-                    textarea.innerHTML = "You do not have permission";
-                } else if(data.status == 406) {
-                    textarea.innerHTML = "Password Incorrect";
-                } else {
-                    textarea.innerHTML = "You have a syntax error";
-                }
+                console.error('Error in fetch:', error);
+                textarea.innerHTML = "Ocurrio un error, probablemente no tienes permisos";
+            })
+            .finally(() => {
                 form.reset();
             });
         }

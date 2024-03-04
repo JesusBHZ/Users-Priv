@@ -120,7 +120,7 @@ def updateTabla(request):
     try:
         id = request.POST.get('input-id', '')
         table = Tablas.objects.get(pk=int(id))
-        print(table)
+        print("table")
         table.name_tabla = request.POST.get('input-name', '')
         table.description = request.POST.get('input-descripcion', '')
         
